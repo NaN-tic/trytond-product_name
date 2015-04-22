@@ -10,8 +10,8 @@ __metaclass__ = PoolMeta
 
 STATES = {
     'readonly': ~Eval('active', True),
-    'invisible': Eval('_parent_template', {}).get('unique_variant', False),
-    'required': ~Eval('_parent_template', {}).get('unique_variant', False),
+    'invisible': (~Eval('variant_name', False) & Eval('_parent_template', {}).get('unique_variant', False)),
+    'required': ~(Eval('variant_name', False) | Eval('_parent_template', {}).get('unique_variant', False)),
     }
 DEPENDS = ['active']
 
@@ -20,6 +20,14 @@ class Product:
     __name__ = 'product.product'
     name = fields.Char("Name", size=None, select=True, states=STATES,
         depends=DEPENDS)
+    variant_name = fields.Function(fields.Boolean('Variant Name'),
+        'on_change_with_variant_name')
+
+    @fields.depends('template')
+    def on_change_with_variant_name(self, name=None):
+        if self.template:
+            return self.template.unique_variant
+        return False
 
     @classmethod
     def search_rec_name(cls, name, clause):
