@@ -23,6 +23,12 @@ class Product:
     variant_name = fields.Function(fields.Boolean('Variant Name'),
         'on_change_with_variant_name')
 
+    def __getattr__(self, name):
+        result = super(Product, self).__getattr__(name)
+        if not result and name == 'name':
+            return getattr(self.template, name)
+        return result
+
     @fields.depends('template')
     def on_change_with_variant_name(self, name=None):
         if self.template:
