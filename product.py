@@ -39,7 +39,7 @@ class Product:
     def search(cls, domain, offset=0, limit=None, order=None, count=False,
             query=False):
         for d in domain:
-            if d[0] == 'name':
+            if d and d[0] == 'name':
                 domain = ['OR', domain[:], ('template.name', 'ilike', d[2])]
                 break
         return super(Product, cls).search(domain, offset=offset, limit=limit,
