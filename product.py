@@ -36,6 +36,16 @@ class Product:
         return False
 
     @classmethod
+    def search(cls, domain, offset=0, limit=None, order=None, count=False,
+            query=False):
+        for d in domain:
+            if d[0] == 'name':
+                domain = ['OR', domain[:], ('template.name', 'ilike', d[2])]
+                break
+        return super(Product, cls).search(domain, offset=offset, limit=limit,
+            order=order, count=count, query=query)
+
+    @classmethod
     def search_rec_name(cls, name, clause):
         res = super(Product, cls).search_rec_name(name, clause)
         return ['OR',
